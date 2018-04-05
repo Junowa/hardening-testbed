@@ -1,0 +1,82 @@
+{
+  "variables": {
+
+    "vm_name": "centos7.4-template",
+    "iso_url": "/isos/CentOS-7-x86_64-Minimal-1708.iso",
+    "iso_checksum": "aae20c8052a55cf179af88d9dd35f1a889cd5773",
+    "vcpu": "1",
+    "mem": "2048"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "vm_name": "{{user `vm_name`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "sha1",
+      "headless": "false",
+      "output_directory": "/builds/virtualbox-{{user `vm_name`}}-{{ timestamp }}",
+      "guest_os_type": "RedHat_64",
+      "disk_size": "40000",
+      "ssh_username": "provisioner",
+      "ssh_password": "@nsibleRocks16",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "1h",
+      "boot_command": "<tab> inst.text inst.ks=hd:fd0:/centos7.4-template.ks <enter><wait>",
+      "boot_wait": "10s",
+
+      "shutdown_command": "echo '@nsibleRocks16' | sudo -S /sbin/halt -p",
+      "post_shutdown_delay" : "5m",
+      "floppy_files": [
+        "centos7.4-template.ks"
+      ],
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "files/ssh_keys/provisioner.pub",
+      "destination": "/tmp/provisioner.pub"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo '@nsibleRocks16' | {{.Vars}} sudo -S -E sh '{{ .Path}}'",
+      "scripts": ["post-install-centos7.sh"]
+    },
+    {
+      "type": "shell",
+      "inline": ["echo '@nsibleRocks16'| sudo -S /usr/sbin/reboot"],
+      "expect_disconnect": true
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo '@nsibleRocks16' | {{.Vars}} sudo -S -E sh '{{ .Path}}'",
+      "scripts": ["post-install-centos7-vbox.sh"],
+      "expect_disconnect": true,
+      "pause_before": "10s"
+    }
+  ],
+  "post-processors": [
+  {
+    "type": "vagrant",
+    "keep_input_artifact": true,
+    "output": "{{user `vm_name`}}_{{.Provider}}.box"
+  } 
+  ]
+}
