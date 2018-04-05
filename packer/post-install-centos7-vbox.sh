@@ -3,11 +3,17 @@
 echo "### Install VBox requirements"
 yum -y install perl gcc make kernel-devel bzip2 
 
-
 mkdir -p /media/cdrom
 mount VBoxGuestAdditions_*.iso /media/cdrom
 
 /media/cdrom/VBoxLinuxAdditions.run
+
+echo "### Add vagrant user and password-less sudo"
+useradd vagrant
+echo "vagrant" | passwd vagrant --stdin
+echo "vagrant     ALL=(ALL)        NOPASSWD:ALL" >> /etc/sudoers
+
+
 
 echo "### Clean VBox install stuff"
 umount /media/cdrom
