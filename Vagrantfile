@@ -18,6 +18,6 @@ Vagrant.configure("2") do |appsrv|
   
 
   appsrv.ssh.username = "provisioner"
-  appsrv.ssh.private_key_path = "/builds/ssh_keys/provisioner.priv"
+  appsrv.ssh.private_key_path = "packer/files/ssh_keys/provisioner.priv"
 
 end
