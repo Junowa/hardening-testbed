@@ -1,0 +1,13 @@
+- name: Harden all systems
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: True
+  vars:
+    security_enable_firewalld: yes
+    security_rhel7_initialize_aide: no
+    security_ntp_servers:
+      - 1.fr.pool.ntp.org
+      - 2.fr.pool.ntp.org
+  roles:
+    - ansible-hardening
