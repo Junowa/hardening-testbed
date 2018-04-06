@@ -9,7 +9,7 @@ mount VBoxGuestAdditions_*.iso /media/cdrom
 /media/cdrom/VBoxLinuxAdditions.run
 
 echo "### Add vagrant user (provisioner) and password-less sudo"
-sed -i -e "s/^provisioner.*$/provisioner     ALL=(ALL)        NOPASSWD:ALL" /etc/sudoers
+sed -i -e "s/^provisioner.*$/provisioner     ALL=(ALL)        NOPASSWD:ALL/" /etc/sudoers
 
 
 echo "### Clean VBox install stuff"
